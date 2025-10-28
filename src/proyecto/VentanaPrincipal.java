@@ -55,11 +55,17 @@ public class VentanaPrincipal extends javax.swing.JFrame {
 
         JButton btnCargarArchivo = new JButton("Cargar Archivo");
         JButton btnIdentificarCFC = new JButton("Identificar Componentes");
+        JButton btnAgregarUsuario = new JButton("Agregar Usuario");
+        JButton btnEliminarUsuario = new JButton("Eliminar Usuario");
 
         // Añadir botones al panel de controles
         panelControles.add(btnCargarArchivo);
-        panelControles.add(Box.createRigidArea(new Dimension(0, 10))); // Un espacio vertical
+        panelControles.add(Box.createRigidArea(new Dimension(0, 10)));
         panelControles.add(btnIdentificarCFC);
+        panelControles.add(Box.createRigidArea(new Dimension(0, 10)));
+        panelControles.add(btnAgregarUsuario);
+        panelControles.add(Box.createRigidArea(new Dimension(0, 10))); // Espacio
+        panelControles.add(btnEliminarUsuario);
 
         // 4. Crear el panel donde irá el grafo (CENTRO)
         panelGrafo = new JPanel(new BorderLayout());
@@ -94,6 +100,80 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             }
             MiListaEnlazada<MiListaEnlazada<Integer>> componentes = logica.encontrarCFC();
             colorearGrafo(componentes);
+        });
+        
+        btnAgregarUsuario.addActionListener((ActionEvent e) -> {
+            if (logica.getGrafo() == null) {
+                JOptionPane.showMessageDialog(this, "Primero debe cargar un grafo.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            String nuevoUsuario = JOptionPane.showInputDialog(this, "Ingrese el nombre del nuevo usuario (ej. @nuevo):");
+            if (nuevoUsuario == null || nuevoUsuario.trim().isEmpty() || !nuevoUsuario.startsWith("@")) {
+                JOptionPane.showMessageDialog(this, "Nombre de usuario inválido. Debe empezar con '@' y no estar vacío.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            if (logica.getIndicePorUsuario(nuevoUsuario.trim()) != -1) {
+                JOptionPane.showMessageDialog(this, "El usuario '" + nuevoUsuario + "' ya existe.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            Object[] opciones = {"Seguir a un usuario existente", "No seguir a nadie"};
+            int seleccion = JOptionPane.showOptionDialog(this, "¿El nuevo usuario seguirá a alguien?", "Nueva Relación", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, opciones, opciones[0]);
+
+            String usuarioASeguir = "";
+            if (seleccion == JOptionPane.YES_OPTION) {
+                String[] usuariosExistentes = logica.getUsuarios();
+                usuarioASeguir = (String) JOptionPane.showInputDialog(
+                    this, "Seleccione a qué usuario seguirá:", "Seleccionar Usuario",
+                    JOptionPane.QUESTION_MESSAGE, null, usuariosExistentes, usuariosExistentes[0]);
+                if (usuarioASeguir == null) {
+                    return;
+                }
+            }
+
+            logica.agregarUsuario(nuevoUsuario.trim(), usuarioASeguir);
+            mostrarGrafo();
+            JOptionPane.showMessageDialog(this, "Usuario '" + nuevoUsuario + "' agregado exitosamente.");
+        });
+        
+        // Lógica para el nuevo botón "Eliminar Usuario"
+        btnEliminarUsuario.addActionListener((ActionEvent e) -> {
+            if (logica.getGrafo() == null || logica.getGrafo().getNumVertices() == 0) {
+                JOptionPane.showMessageDialog(this, "No hay usuarios para eliminar.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            // 1. Mostrar una lista de usuarios existentes para que elija
+            String[] usuariosExistentes = logica.getUsuarios();
+            String usuarioSeleccionado = (String) JOptionPane.showInputDialog(
+                    this,
+                    "Seleccione el usuario a eliminar:",
+                    "Eliminar Usuario",
+                    JOptionPane.QUESTION_MESSAGE,
+                    null,
+                    usuariosExistentes,
+                    usuariosExistentes[0]);
+
+            // Si el usuario cancela, no hacemos nada
+            if (usuarioSeleccionado == null) {
+                return;
+            }
+
+            // 2. Confirmación antes de borrar
+            int confirmacion = JOptionPane.showConfirmDialog(
+                    this,
+                    "¿Está seguro de que desea eliminar a '" + usuarioSeleccionado + "'? Esta acción es permanente.",
+                    "Confirmar Eliminación",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.WARNING_MESSAGE);
+
+            if (confirmacion == JOptionPane.YES_OPTION) {
+                // 3. Llamar a la lógica y actualizar la vista
+                logica.eliminarUsuario(usuarioSeleccionado);
+                mostrarGrafo(); // Redibujar el grafo sin el usuario
+                JOptionPane.showMessageDialog(this, "Usuario '" + usuarioSeleccionado + "' eliminado exitosamente.");
+            }
         });
         
         // 7. Ajustar el tamaño final y hacer visible
@@ -196,20 +276,20 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         panelControlesLayout.setHorizontalGroup(
             panelControlesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelControlesLayout.createSequentialGroup()
-                .addGap(56, 56, 56)
-                .addComponent(btnCargarArchivo, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(121, 121, 121)
-                .addComponent(btnIdentificarCFC, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(71, Short.MAX_VALUE))
+                .addGap(19, 19, 19)
+                .addGroup(panelControlesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(btnIdentificarCFC, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                    .addComponent(btnCargarArchivo, javax.swing.GroupLayout.DEFAULT_SIZE, 147, Short.MAX_VALUE))
+                .addContainerGap(394, Short.MAX_VALUE))
         );
         panelControlesLayout.setVerticalGroup(
             panelControlesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelControlesLayout.createSequentialGroup()
-                .addGap(46, 46, 46)
-                .addGroup(panelControlesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnCargarArchivo, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnIdentificarCFC, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(279, Short.MAX_VALUE))
+                .addGap(21, 21, 21)
+                .addComponent(btnCargarArchivo, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnIdentificarCFC, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(298, Short.MAX_VALUE))
         );
 
         getContentPane().add(panelControles, java.awt.BorderLayout.WEST);
