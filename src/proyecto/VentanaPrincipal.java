@@ -29,9 +29,18 @@ import org.graphstream.ui.swing_viewer.SwingViewer;
 import org.graphstream.ui.swing_viewer.ViewPanel;
 import org.graphstream.ui.view.Viewer;
 
+/**
+ * Clase principal que gestiona la interfaz gráfica (GUI) de la aplicación.
+ * Construye la ventana, los paneles y los botones, y maneja las interacciones
+ * del usuario, delegando la lógica de negocio a la clase LogicaGrafo.
+ */
 
 public class VentanaPrincipal extends javax.swing.JFrame {
-
+    
+    /**
+     * Constructor que inicializa todos los componentes de la interfaz gráfica,
+     * establece sus propiedades y asigna los listeners a los botones.
+     */
  
     private final LogicaGrafo logica;
    
@@ -57,6 +66,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         JButton btnIdentificarCFC = new JButton("Identificar Componentes");
         JButton btnAgregarUsuario = new JButton("Agregar Usuario");
         JButton btnEliminarUsuario = new JButton("Eliminar Usuario");
+        JButton btnGuardarCambios = new JButton("Guardar Cambios");
 
         // Añadir botones al panel de controles
         panelControles.add(btnCargarArchivo);
@@ -64,8 +74,10 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         panelControles.add(btnIdentificarCFC);
         panelControles.add(Box.createRigidArea(new Dimension(0, 10)));
         panelControles.add(btnAgregarUsuario);
-        panelControles.add(Box.createRigidArea(new Dimension(0, 10))); // Espacio
+        panelControles.add(Box.createRigidArea(new Dimension(0, 10)));
         panelControles.add(btnEliminarUsuario);
+        panelControles.add(Box.createRigidArea(new Dimension(0, 10)));
+        panelControles.add(btnGuardarCambios);
 
         // 4. Crear el panel donde irá el grafo (CENTRO)
         panelGrafo = new JPanel(new BorderLayout());
@@ -176,6 +188,36 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             }
         });
         
+        // Lógica para el nuevo botón "Guardar Cambios"
+        btnGuardarCambios.addActionListener((ActionEvent e) -> {
+            if (logica.getGrafo() == null) {
+                JOptionPane.showMessageDialog(this, "No hay ningún grafo cargado para guardar.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setDialogTitle("Guardar grafo como archivo de texto");
+            fileChooser.setFileFilter(new FileNameExtensionFilter("Archivos de Texto (*.txt)", "txt"));
+
+            // Abrir el diálogo en modo "Guardar"
+            if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+                File archivoParaGuardar = fileChooser.getSelectedFile();
+
+                // Asegurarse de que el archivo tenga la extensión .txt
+                if (!archivoParaGuardar.getName().toLowerCase().endsWith(".txt")) {
+                    archivoParaGuardar = new File(archivoParaGuardar.getAbsolutePath() + ".txt");
+                }
+
+                try {
+                    // 3. Llamar a la lógica para escribir en el archivo
+                    logica.guardarEnArchivo(archivoParaGuardar);
+                    JOptionPane.showMessageDialog(this, "Grafo guardado exitosamente en:\n" + archivoParaGuardar.getName(), "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(this, "Error al guardar el archivo: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+        
         // 7. Ajustar el tamaño final y hacer visible
         setSize(800, 600);
         setLocationRelativeTo(null); // Centrar en pantalla
@@ -237,6 +279,11 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         }
     }
     
+    /**
+     * Método principal que inicia la aplicación, creando y mostrando la ventana.
+     * @param args Argumentos de la línea de comandos (no se utilizan).
+     */
+    
     public static void main(String[] args) {
         // Asegura que la GUI se cree y se muestre en el hilo correcto
         SwingUtilities.invokeLater(() -> {
@@ -251,45 +298,19 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     private void initComponents() {
 
         panelControles = new javax.swing.JPanel();
-        btnCargarArchivo = new javax.swing.JButton();
-        btnIdentificarCFC = new javax.swing.JButton();
         panelGrafo = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-
-        btnCargarArchivo.setText("Cargar Archivo");
-        btnCargarArchivo.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnCargarArchivoActionPerformed(evt);
-            }
-        });
-
-        btnIdentificarCFC.setText("Identificar Componentes");
-        btnIdentificarCFC.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnIdentificarCFCActionPerformed(evt);
-            }
-        });
 
         javax.swing.GroupLayout panelControlesLayout = new javax.swing.GroupLayout(panelControles);
         panelControles.setLayout(panelControlesLayout);
         panelControlesLayout.setHorizontalGroup(
             panelControlesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelControlesLayout.createSequentialGroup()
-                .addGap(19, 19, 19)
-                .addGroup(panelControlesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(btnIdentificarCFC, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                    .addComponent(btnCargarArchivo, javax.swing.GroupLayout.DEFAULT_SIZE, 147, Short.MAX_VALUE))
-                .addContainerGap(394, Short.MAX_VALUE))
+            .addGap(0, 560, Short.MAX_VALUE)
         );
         panelControlesLayout.setVerticalGroup(
             panelControlesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelControlesLayout.createSequentialGroup()
-                .addGap(21, 21, 21)
-                .addComponent(btnCargarArchivo, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnIdentificarCFC, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(298, Short.MAX_VALUE))
+            .addGap(0, 416, Short.MAX_VALUE)
         );
 
         getContentPane().add(panelControles, java.awt.BorderLayout.WEST);
@@ -314,41 +335,6 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     
-    private void btnCargarArchivoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCargarArchivoActionPerformed
-        JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setDialogTitle("Seleccione el archivo de texto del grafo");
-        fileChooser.setFileFilter(new FileNameExtensionFilter("Archivos de Texto (*.txt)", "txt"));
-
-        if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-            File archivo = fileChooser.getSelectedFile();
-            try {
-                logica.cargarDesdeArchivo(archivo);
-                mostrarGrafo(); // Llamamos al método para dibujar
-                JOptionPane.showMessageDialog(this, "Grafo cargado exitosamente.");
-            } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this, "Error al leer el archivo: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-                ex.printStackTrace(); // Útil para ver el error completo en la consola
-            }
-        }       
-        
-       
-    
-    }//GEN-LAST:event_btnCargarArchivoActionPerformed
-
-    private void btnIdentificarCFCActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnIdentificarCFCActionPerformed
-        //pRIMERO REVISA SI YA SE CARGO UN GRAFO
-        if (logica.getGrafo() == null) {
-            JOptionPane.showMessageDialog(this, "Primero debe cargar un grafo.", "Advertencia", JOptionPane.WARNING_MESSAGE);
-            return; // NO HACE NADA MAS SI NO HAY GRAFO
-        }
-        // LLAMA A LA LOGICA QUE EJECUTA EL ALGORITMO DE KOSARAJU
-        MiListaEnlazada<MiListaEnlazada<Integer>> componentes = logica.encontrarCFC();
-        // LLAMA AL METODO QUE USA EL RESULTA PARA PINTAR LOS NODOS
-        colorearGrafo(componentes);
-        
-        JOptionPane.showMessageDialog(this, "Se identificaron los componentes fuertemente conectados.");
-    }//GEN-LAST:event_btnIdentificarCFCActionPerformed
-
     
     
     /**
@@ -357,8 +343,6 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnCargarArchivo;
-    private javax.swing.JButton btnIdentificarCFC;
     private javax.swing.JPanel panelControles;
     private javax.swing.JPanel panelGrafo;
     // End of variables declaration//GEN-END:variables

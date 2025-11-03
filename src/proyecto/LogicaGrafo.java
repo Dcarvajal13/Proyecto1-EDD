@@ -6,14 +6,28 @@ package proyecto;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.PrintWriter;
+
+/**
+ * Clase "cerebro" del proyecto. Contiene la lógica de negocio para manipular
+ * el grafo, ejecutar algoritmos y manejar la lectura/escritura de archivos.
+ */
+
 public class LogicaGrafo {
+    
+    /**
+     * Carga los datos de usuarios y relaciones desde un archivo de texto 
+     * para construir la estructura del grafo en memoria.
+     * @param archivo El archivo de texto plano a procesar.
+     * @throws Exception Si ocurre un error durante la lectura del archivo.
+     */
     
     private GrafoDirigido grafo;
     private String[] usuarios; // Arreglo para mapear indice <-> @usuario
 
     /**
      * Busca el índice numérico de un usuario a partir de su nombre.
-     * Reemplaza la funcionalidad del HashMap.
      * @param nombreUsuario El nombre de usuario a buscar (ej. "@pepe").
      * @return El índice del usuario, o -1 si no se encuentra.
      */
@@ -117,8 +131,10 @@ public class LogicaGrafo {
     }
 
     /**
-     * Encuentra y devuelve todos los componentes fuertemente conectados del grafo.
-     * @return Una lista de listas, donde cada lista interna es un componente.
+     * Implementa el algoritmo de Kosaraju para encontrar y devolver todos los
+     * componentes fuertemente conectados del grafo.
+     * @return Una lista de listas, donde cada lista interna es un componente
+     * y contiene los índices de los usuarios que lo conforman.
      */
     public MiListaEnlazada<MiListaEnlazada<Integer>> encontrarCFC() {
         MiPila<Integer> pila = new MiPila<>();
@@ -154,10 +170,12 @@ public class LogicaGrafo {
     public String[] getUsuarios() { return usuarios; }
     
    /**
- * Agrega un nuevo usuario al grafo y establece una relación de seguimiento.
- * @param nuevoUsuario El nombre del nuevo usuario (ej. "@derek").
- * @param usuarioASeguir El nombre del usuario existente al que seguirá.
- */
+     * Agrega un nuevo usuario al grafo y establece una relación de seguimiento.
+     * Este método redimensiona las estructuras de datos para hacer espacio
+     * para el nuevo vértice y su arista correspondiente.
+     * @param nuevoUsuario El nombre del nuevo usuario que debe empezar con '@'.
+     * @param usuarioASeguir El nombre del usuario existente al que seguirá.
+     */
 public void agregarUsuario(String nuevoUsuario, String usuarioASeguir) {
     if (getIndicePorUsuario(nuevoUsuario) != -1) {
         System.out.println("Error: El usuario " + nuevoUsuario + " ya existe.");
@@ -200,9 +218,10 @@ public void agregarUsuario(String nuevoUsuario, String usuarioASeguir) {
 } 
 
 /**
- * Elimina un usuario del grafo, junto con todas sus conexiones entrantes y salientes.
- * @param usuarioAEliminar El nombre del usuario a eliminar (ej. "@pepe").
- */
+     * Elimina un usuario del grafo, junto con todas sus conexiones entrantes y salientes.
+     * Reconstruye las estructuras de datos para reflejar la eliminación.
+     * @param usuarioAEliminar El nombre del usuario a eliminar (ej. "@pepe").
+     */
 public void eliminarUsuario(String usuarioAEliminar) {
     int indiceAEliminar = getIndicePorUsuario(usuarioAEliminar);
     if (indiceAEliminar == -1) {
@@ -248,6 +267,40 @@ public void eliminarUsuario(String usuarioAEliminar) {
         }
     }
     this.grafo = nuevoGrafo;
+}
+
+/**
+     * Guarda el estado actual del grafo en un archivo de texto, manteniendo el
+     * formato original de "usuarios" y "relaciones".
+     * @param archivo El archivo donde se guardará la información.
+     * @throws Exception Si ocurre un error durante la escritura del archivo.
+     */
+public void guardarEnArchivo(File archivo) throws Exception {
+    PrintWriter writer = new PrintWriter(new FileWriter(archivo));
+
+    // 1. Escribir la sección de usuarios
+    writer.println("usuarios");
+    String[] usuariosActuales = getUsuarios();
+    for (int i = 0; i < usuariosActuales.length; i++) {
+        writer.println(usuariosActuales[i]);
+    }
+
+    writer.println(); // Línea en blanco para separar secciones
+
+    // 2. Escribir la sección de relaciones
+    writer.println("relaciones");
+    GrafoDirigido grafoActual = getGrafo();
+    for (int i = 0; i < grafoActual.getNumVertices(); i++) {
+        String usuarioOrigen = usuariosActuales[i];
+        Nodo<Integer> adyacente = grafoActual.getAdyacentes(i).getCabeza();
+        while (adyacente != null) {
+            String usuarioDestino = usuariosActuales[adyacente.getDato()];
+            writer.println(usuarioOrigen + ", " + usuarioDestino);
+            adyacente = adyacente.getSiguiente();
+        }
+    }
+
+    writer.close(); // Muy importante hay que cerrar el writer para que se puedan guardar en el archivo
 }
     
 }

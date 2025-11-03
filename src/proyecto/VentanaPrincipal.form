@@ -33,46 +33,15 @@
       <Layout>
         <DimensionLayout dim="0">
           <Group type="103" groupAlignment="0" attributes="0">
-              <Group type="102" alignment="0" attributes="0">
-                  <EmptySpace min="-2" pref="19" max="-2" attributes="0"/>
-                  <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                      <Component id="btnIdentificarCFC" pref="0" max="32767" attributes="0"/>
-                      <Component id="btnCargarArchivo" pref="147" max="32767" attributes="0"/>
-                  </Group>
-                  <EmptySpace pref="394" max="32767" attributes="0"/>
-              </Group>
+              <EmptySpace min="0" pref="560" max="32767" attributes="0"/>
           </Group>
         </DimensionLayout>
         <DimensionLayout dim="1">
           <Group type="103" groupAlignment="0" attributes="0">
-              <Group type="102" alignment="0" attributes="0">
-                  <EmptySpace min="-2" pref="21" max="-2" attributes="0"/>
-                  <Component id="btnCargarArchivo" min="-2" pref="45" max="-2" attributes="0"/>
-                  <EmptySpace max="-2" attributes="0"/>
-                  <Component id="btnIdentificarCFC" min="-2" pref="46" max="-2" attributes="0"/>
-                  <EmptySpace pref="298" max="32767" attributes="0"/>
-              </Group>
+              <EmptySpace min="0" pref="416" max="32767" attributes="0"/>
           </Group>
         </DimensionLayout>
       </Layout>
-      <SubComponents>
-        <Component class="javax.swing.JButton" name="btnCargarArchivo">
-          <Properties>
-            <Property name="text" type="java.lang.String" value="Cargar Archivo"/>
-          </Properties>
-          <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnCargarArchivoActionPerformed"/>
-          </Events>
-        </Component>
-        <Component class="javax.swing.JButton" name="btnIdentificarCFC">
-          <Properties>
-            <Property name="text" type="java.lang.String" value="Identificar Componentes"/>
-          </Properties>
-          <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnIdentificarCFCActionPerformed"/>
-          </Events>
-        </Component>
-      </SubComponents>
     </Container>
     <Container class="javax.swing.JPanel" name="panelGrafo">
       <Properties>

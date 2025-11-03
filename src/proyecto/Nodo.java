@@ -4,6 +4,12 @@
  */
 package proyecto;
 
+/**
+ * Representa un nodo genérico para ser usado en estructuras de datos como
+ * listas enlazadas o pilas. Contiene un dato y una referencia al siguiente nodo.
+ * @param <T> El tipo de dato que almacenará el nodo.
+ */
+
 public class Nodo <T>{
     private T dato;
     private Nodo<T> siguiente;

@@ -5,9 +5,9 @@
 package proyecto;
 
 /**
- * Implementando una lista enlazada simple.
- * @author User
- * @param <T>
+ * Implementación de una lista enlazada simple desde cero. Se utiliza como base
+ * para la lista de adyacencia del grafo.
+ * @param <T> El tipo de dato que almacenará la lista.
  */
 public class MiListaEnlazada <T>{
     
@@ -18,10 +18,20 @@ public class MiListaEnlazada <T>{
         this.cabeza = null;
         this.tamano = 0;
     }
+    
+    /**
+     * Revisa si la lista no contiene elementos.
+     * @return true si la lista está vacía, false en caso contrario.
+     */
 
     public boolean estaVacia() { return cabeza == null; }
     public int getTamano() { return tamano; }
     public Nodo<T> getCabeza() { return cabeza; }
+    
+    /**
+     * Agrega un nuevo elemento al final de la lista.
+     * @param dato El dato a agregar.
+     */
 
     public void agregarAlFinal(T dato) {
         Nodo<T> nuevoNodo = new Nodo<>(dato);

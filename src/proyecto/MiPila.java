@@ -5,9 +5,9 @@
 package proyecto;
 
 /**
- * Implementando una pila (Stack) usando una lista enlazada (LIFO) 
- * @author User
- * @param <T> EL tipo de dato que almacenara la pila
+ * Implementación de una Pila (Stack) usando una lista enlazada. Sigue el
+ * principio LIFO (Last-In, First-Out) y es crucial para el algoritmo de Kosaraju.
+ * @param <T> El tipo de dato que almacenará la pila.
  */
 public class MiPila<T> {
     
@@ -18,9 +18,20 @@ public class MiPila<T> {
         this.cima = null;
         this.tamano = 0;
     }
-
+    
+    
+    /**
+     * Revisa si la pila no contiene elementos.
+     * @return true si la pila está vacía, false en caso contrario.
+     */
+    
     public boolean estaVacia() { return cima == null; }
     public int getTamano() { return tamano; }
+    
+    /**
+     * Agrega un elemento a la cima de la pila.
+     * @param dato El dato a apilar.
+     */
 
     public void apilar(T dato) { // push
         Nodo<T> nuevoNodo = new Nodo<>(dato);
@@ -30,6 +41,11 @@ public class MiPila<T> {
         cima = nuevoNodo;
         tamano++;
     }
+    
+    /**
+     * Elimina y devuelve el elemento en la cima de la pila.
+     * @return El dato que estaba en la cima, o null si la pila está vacía.
+     */
 
     public T desapilar() { // pop
         if (estaVacia()) { return null; }
